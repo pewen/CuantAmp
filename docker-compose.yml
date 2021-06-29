@@ -1,0 +1,36 @@
+version: "3.6"
+
+services:
+  ui:
+    build: ./ui
+    command: npm run dev
+    volumes:
+      - ./ui:/app
+    ports:
+      - 3000:3000
+      - 24678:24678 # For hot reload
+
+  api:
+    build: ./api
+    command: bash -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    volumes:
+      - ./api:/app
+    ports:
+      - 8000:8000
+
+  pipeline:
+    build: ./pipeline
+    volumes:
+      - ./pipeline:/app
+
+  db:
+    image: timescale/timescaledb-postgis:2.3.0-pg13
+    env_file:
+      .env
+    environment:
+      TIMESCALEDB_TELEMETRY: "off"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
