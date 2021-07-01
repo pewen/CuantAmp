@@ -13,10 +13,14 @@ services:
   api:
     build: ./api
     command: bash -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    env_file:
+      - .env
     volumes:
       - ./api:/app
     ports:
       - 8000:8000
+    depends_on:
+      - db
 
   pipeline:
     build: ./pipeline
@@ -31,6 +35,13 @@ services:
       TIMESCALEDB_TELEMETRY: "off"
     volumes:
       - db-data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    ports:
+      - 8081:8080
+    depends_on:
+      - db
 
 volumes:
   db-data:

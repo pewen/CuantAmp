@@ -6,12 +6,14 @@ from sqlalchemy import pool
 
 from config import settings
 from db import BaseModel
+from users import models
+from tweets import models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 config.set_main_option(
-    "sqlalchemy.url", settings.SQLALCHEMY_DATABASE_WURU_URI,
+    "sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI,
 )
 
 # Interpret the config file for Python logging.
@@ -22,7 +24,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = BaseModel.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
