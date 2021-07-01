@@ -7,7 +7,7 @@ Cuantificando Amplificacion (en twitter)
 ```bash
 git clone https://github.com/pewen/CuantAmp.git
 cd CuantAmp
-docker-compose build
+./dev-setup
 docker-compose up
 ```
 
