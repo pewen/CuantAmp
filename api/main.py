@@ -1,11 +1,16 @@
 from fastapi import FastAPI, APIRouter
 
-from users import  router as users
-
+from tusers import router as tusers
+from tweets import router as tweets
 
 app = FastAPI()
 router = APIRouter()
 
-router.include_router(users.router, prefix="/user", tags=["users"])
+router.include_router(
+  tusers.router, prefix="/tusers", tags=["tusers"]
+)
+router.include_router(
+  tweets.router, prefix="/tweets", tags=["tweets"]
+)
 
 app.include_router(router, prefix="/api")
