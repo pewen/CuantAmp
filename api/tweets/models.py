@@ -8,11 +8,12 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
 )
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects import postgresql
 
 from db import BaseModel
-from users.models import TwitterUser
+from tusers.models import TwitterUser
 
 
 class Tweet(BaseModel):
@@ -50,8 +51,24 @@ class Tweet(BaseModel):
 class TweetMetrics(BaseModel):
     __tablename__ = "tweets_metrics"
 
-    time: datetime = Column(DateTime, primary_key=True, index=True)
-    tweet_id = Column(Integer, nullable=False, index=True)
+    id: int = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+        autoincrement=True
+    )
+    time: datetime = Column(
+        DateTime(timezone=True),
+        default=func.now(),
+        primary_key=True,
+        index=True
+    )
+    tweet_id = Column(
+        Integer,
+        ForeignKey("tweets.id"),
+        nullable=False,
+        index=True
+    )
 
     quote_count: int = Column(Integer)
     reply_count: int = Column(Integer)
