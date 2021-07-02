@@ -6,7 +6,7 @@ from sqlalchemy import pool
 
 from config import settings
 from db import BaseModel
-from users import models
+from tusers import models
 from tweets import models
 
 # this is the Alembic Config object, which provides
