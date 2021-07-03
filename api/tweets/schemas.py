@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
 
 from db import BaseSchema
@@ -10,19 +10,19 @@ class TweetBase(BaseSchema):
     text: str
     source: str
     truncated: bool
-    coordinates: dict
-    place: dict
-    entities: dict
-    extended_entities: dict
-    lang: str
-    in_reply_to_status_id: int
-    in_reply_to_user_id: int
+    coordinates: Optional[dict]
+    place: Optional[dict]
+    entities: Optional[dict]
+    extended_entities: Optional[dict]
+    lang: Optional[str]
+    in_reply_to_status_id: Optional[int]
+    in_reply_to_user_id: Optional[int]
     user_id: int
     user: TUser
-    quoted_status_id: int
-    # quoted_status
-    retweeted_status_id: int
-    # retweeted_status
+    quoted_status_id: Optional[int]
+    quoted_status: Optional["TweetBase"]
+    retweeted_status_id: Optional[int]
+    retweeted_status: Optional["TweetBase"]
     quote_count: int
     reply_count: int
     retweet_count: int
@@ -48,3 +48,9 @@ class TweetMetrics(BaseSchema):
     reply_count: int
     retweet_count: int
     favorite_count: int
+
+
+TweetBase.update_forward_refs()
+TweetCreate.update_forward_refs()
+TweetUpdate.update_forward_refs()
+Tweet.update_forward_refs()

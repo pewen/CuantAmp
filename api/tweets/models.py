@@ -20,6 +20,7 @@ class Tweet(BaseModel):
     __tablename__ = "tweets"
 
     id: int = Column(Integer, primary_key=True, index=True, unique=True)
+    created_at: datetime = Column(DateTime, nullable=False)
     text: str = Column(String, nullable=False)
     source: str = Column(String, nullable=False)
     truncated: bool = Column(Boolean, nullable=False)
@@ -37,10 +38,10 @@ class Tweet(BaseModel):
     user: TwitterUser = relationship("User")
 
     quoted_status_id: int = Column(Integer, ForeignKey("tweets.id"))
-    quoted_status = relationship("Tweet")
+    quoted_status: "Tweet" = relationship("Tweet")
 
     retweeted_status_id: int = Column(Integer, ForeignKey("tweets.id"))
-    retweeted_status = relationship("Tweet")
+    retweeted_status: "Tweet" = relationship("Tweet")
 
     quote_count: int = Column(Integer)
     reply_count: int = Column(Integer)
