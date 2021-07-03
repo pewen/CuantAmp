@@ -16,7 +16,7 @@ def create_tweet(
     tweet: schemas.TweetCreate,
     db: Session = Depends(get_db),
 ):
-    return crud.create(db=db, obj_in=tweet)
+    return crud.create_tweet(db=db, tweet=tweet)
 
 @router.put("/{tweet_id}", response_model=schemas.Tweet)
 def update_tweet(
@@ -42,3 +42,14 @@ def get_tweet_metrics(
     db: Session = Depends(get_db),
 ):
     return crud.get_metrics(db=db, by={"tweet_id": tweet_id})
+
+@router.get("/by_user/{user_id}", response_model=List[schemas.Tweet])
+def get_tweets_by_user(
+    user_id: int,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+):
+    return crud.get_tweets_by_user(
+        db=db, user_id=user_id, skip=skip, limit=limit
+    )

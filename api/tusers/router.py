@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from db import get_db
 from tusers import schemas
 from tusers.controller import crud
-
+from tweets import schemas as tweets_schemas
+from tweets.controller import crud as tweets_crud
 
 router = APIRouter()
 
@@ -44,3 +45,14 @@ def get_tuser_metrics(
     db: Session = Depends(get_db),
 ):
     return crud.get_metrics(db=db, by={"user_id": user_id})
+
+@router.get("/{user_id}/tweets", response_model=List[tweets_schemas.Tweet])
+def get_tusers_tweets(
+    user_id: int,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+):
+    return tweets_crud.get_tweets_by_user(
+        db=db, user_id=user_id, skip=skip, limit=limit
+    )
