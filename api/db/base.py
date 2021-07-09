@@ -89,23 +89,32 @@ class BaseCRUD(Generic[ModelType, MetricsModelType, CreateSchemaType, UpdateSche
             .all()
         )
 
-    def get_metrics(self, db: Session, *, by: dict, order=["time desc"]) -> List[MetricsModelType]:
+    def get_metrics(
+        self, db: Session, *, id: Any, order=["time desc"]
+    ) -> List[MetricsModelType]:
         return (
             db.query(self.metrics_model)
-            .filter_by(**by)
+            .filter(self.metrics_model.id == id)
             .order_by(*get_ordering_for_model(self.metrics_model, order))
             .all()
         )
 
-    def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
+    def create(
+        self,
+        db: Session,
+        *,
+        obj_in: CreateSchemaType,
+        has_metrics: bool = True,
+    ) -> ModelType:
         if isinstance(obj_in, dict):
             create_data = obj_in
         else:
             create_data = obj_in.dict(exclude_unset=True)
         db_obj = fill_model(create_data, self.model)
         db.add(db_obj)
-        db_metrics_obj = fill_model(create_data, self.metrics_model)
-        db.add(db_metrics_obj)
+        if has_metrics:
+            db_metrics_obj = fill_model(create_data, self.metrics_model)
+            db.add(db_metrics_obj)
 
         db.commit()
         db.refresh(db_obj)
@@ -117,6 +126,7 @@ class BaseCRUD(Generic[ModelType, MetricsModelType, CreateSchemaType, UpdateSche
         *,
         db_obj: ModelType,
         obj_in: Union[UpdateSchemaType, Dict[str, Any]],
+        has_metrics: bool = True,
     ) -> ModelType:
         obj_data = jsonable_encoder(db_obj)
         if isinstance(obj_in, dict):
@@ -128,10 +138,9 @@ class BaseCRUD(Generic[ModelType, MetricsModelType, CreateSchemaType, UpdateSche
                 setattr(db_obj, field, update_data[field])
         db.add(db_obj)
 
-        if "id" in update_data:
-            del update_data["id"]
-        db_metrics_obj = fill_model(update_data, self.metrics_model)
-        db.add(db_metrics_obj)
+        if has_metrics:
+            db_metrics_obj = fill_model(update_data, self.metrics_model)
+            db.add(db_metrics_obj)
 
         db.commit()
         db.refresh(db_obj)
