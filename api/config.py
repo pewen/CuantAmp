@@ -22,6 +22,11 @@ class Settings(BaseSettings):
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
 
+    CONSUMER_KEY: str
+    CONSUMER_SECRET: str
+    ACCESS_TOKEN: str
+    ACCESS_TOKEN_SECRET: str
+
     class Config:
         case_sensitive = True
 
