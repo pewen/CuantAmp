@@ -2,11 +2,16 @@
 
 Cuantificando Amplificacion (en twitter)
 
-## Local dev
+## Local setup
 
 ```bash
 git clone https://github.com/pewen/CuantAmp.git
 cd CuantAmp
+cp .env.local .env
+# Set the credentials on .env
+
+# This step will take because it will
+# obtain the data for each seed user
 ./dev-setup
 docker-compose up
 ```
