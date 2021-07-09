@@ -5,9 +5,10 @@ from sqlalchemy.orm import Session
 
 from db import get_db
 from tusers import schemas
-from tusers.controller import crud
+from tusers.controller import crud, get_seed_users
 from tweets import schemas as tweets_schemas
 from tweets.controller import crud as tweets_crud
+
 
 router = APIRouter()
 
@@ -17,7 +18,7 @@ def create_tuser(
     user: schemas.TUserCreate,
     db: Session = Depends(get_db),
 ):
-    user.user_id = user.id # FIXME: The schema must do this
+    # user.user_id = user.id # FIXME: The schema must do this
     return crud.create(db=db, obj_in=user)
 
 @router.put("/{user_id}", response_model=schemas.TUser)
@@ -26,7 +27,7 @@ def update_tuser(
     user: schemas.TUserUpdate,
     db: Session = Depends(get_db),
 ):
-    user.user_id = user.id # FIXME: The schema must do this
+    # user.user_id = user.id # FIXME: The schema must do this
     db_user = crud.get(db=db, id=user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="tuser not found")
@@ -44,7 +45,7 @@ def get_tuser_metrics(
     user_id: int,
     db: Session = Depends(get_db),
 ):
-    return crud.get_metrics(db=db, by={"user_id": user_id})
+    return crud.get_metrics(db=db, id=user_id)
 
 @router.get("/{user_id}/tweets", response_model=List[tweets_schemas.Tweet])
 def get_tusers_tweets(
@@ -56,3 +57,7 @@ def get_tusers_tweets(
     return tweets_crud.get_tweets_by_user(
         db=db, user_id=user_id, skip=skip, limit=limit
     )
+
+@router.get("/seed/", response_model=List[schemas.TUserSeed])
+def root(db: Session = Depends(get_db)):
+    return get_seed_users(db=db)
