@@ -26,7 +26,7 @@ def update_tweet(
 ):
     db_tweet = crud.get(db=db, id=tweet_id)
     if not db_tweet:
-        raise HTTPException(status_code=404, detail="tuser not found")
+        raise HTTPException(status_code=404, detail="tweet not found")
     return crud.update(db=db, db_obj=db_tweet, obj_in=tweet)
 
 @router.get("/{tweet_id}", response_model=schemas.Tweet)
@@ -34,14 +34,17 @@ def get_tweet(
     tweet_id: int,
     db: Session = Depends(get_db),
 ):
-    return crud.get(db=db, id=tweet_id)
+    db_tweet = crud.get(db=db, id=tweet_id)
+    if not db_tweet:
+        raise HTTPException(status_code=404, detail="tweet not found")
+    return db_tweet
 
 @router.get("/{tweet_id}/metrics", response_model=List[schemas.TweetMetrics])
 def get_tweet_metrics(
     tweet_id: int,
     db: Session = Depends(get_db),
 ):
-    return crud.get_metrics(db=db, by={"tweet_id": tweet_id})
+    return crud.get_metrics(db=db, user_id=tweet_id)
 
 @router.get("/by_user/{user_id}", response_model=List[schemas.Tweet])
 def get_tweets_by_user(

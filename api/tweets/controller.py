@@ -11,6 +11,13 @@ class TweetCRUD(BaseCRUD[
     def create_tweet(
         self, db: Session, *, tweet: schemas.TweetCreate
     ) -> models.Tweet:
+        # Tweepy don't return this keys
+        tweet.user_id = tweet.user.id
+        if tweet.retweeted_status:
+            tweet.retweeted_status_id = tweet.retweeted_status.id
+        if tweet.retweeted_status:
+            tweet.retweeted_status_id = tweet.retweeted_status.id
+
         db_user = tusers_crud.get(db=db, id=tweet.user_id)
         if not db_user:
             tusers_crud.create(db=db, obj_in=tweet.user)
