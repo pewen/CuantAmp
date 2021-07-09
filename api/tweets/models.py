@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import (
     Column,
+    BigInteger,
     Integer,
     String,
     DateTime,
@@ -19,7 +20,7 @@ from tusers.models import TwitterUser
 class Tweet(BaseModel):
     __tablename__ = "tweets"
 
-    id: int = Column(Integer, primary_key=True, index=True, unique=True)
+    id: int = Column(BigInteger, primary_key=True, index=True, unique=True)
     created_at: datetime = Column(DateTime, nullable=False)
     text: str = Column(String, nullable=False)
     source: str = Column(String, nullable=False)
@@ -29,19 +30,23 @@ class Tweet(BaseModel):
     entities: dict = Column(postgresql.JSON)
     extended_entities: dict = Column(postgresql.JSON)
     lang: str = Column(String)
-    in_reply_to_status_id: int = Column(Integer) # FIXME: debería tener una FK
-    in_reply_to_user_id: int = Column(Integer) # FIXME: debería tener una FK
+    in_reply_to_status_id: int = Column(BigInteger) # FIXME: debería tener una FK
+    in_reply_to_user_id: int = Column(BigInteger) # FIXME: debería tener una FK
 
     user_id: int = Column(
-        Integer, ForeignKey("twitter_users.id"), nullable=False
+        BigInteger, ForeignKey("twitter_users.id"), nullable=False
     )
-    user: TwitterUser = relationship("User")
+    user: TwitterUser = relationship("TwitterUser")
 
-    quoted_status_id: int = Column(Integer, ForeignKey("tweets.id"))
-    quoted_status: "Tweet" = relationship("Tweet")
+    quoted_status_id: int = Column(BigInteger, ForeignKey("tweets.id"))
+    quoted_status: "Tweet" = relationship(
+        "Tweet", foreign_keys=[quoted_status_id], remote_side=[id]
+    )
 
-    retweeted_status_id: int = Column(Integer, ForeignKey("tweets.id"))
-    retweeted_status: "Tweet" = relationship("Tweet")
+    retweeted_status_id: int = Column(BigInteger, ForeignKey("tweets.id"))
+    retweeted_status: "Tweet" = relationship(
+        "Tweet", foreign_keys=[retweeted_status_id], remote_side=[id]
+    )
 
     quote_count: int = Column(Integer)
     reply_count: int = Column(Integer)
@@ -53,21 +58,15 @@ class TweetMetrics(BaseModel):
     __tablename__ = "tweets_metrics"
 
     id: int = Column(
-        Integer,
+        BigInteger,
+        ForeignKey("tweets.id"),
         primary_key=True,
         index=True,
-        autoincrement=True
     )
     time: datetime = Column(
         DateTime(timezone=True),
         default=func.now(),
         primary_key=True,
-        index=True
-    )
-    tweet_id = Column(
-        Integer,
-        ForeignKey("tweets.id"),
-        nullable=False,
         index=True
     )
 

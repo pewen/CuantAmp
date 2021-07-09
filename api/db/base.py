@@ -26,11 +26,11 @@ class BaseModel(SQLBaseModel):
     __abstract__ = True
 
     id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(
+    _created_at = Column(
         DateTime(timezone=True),
         default=func.now(),
     )
-    updated_at = Column(
+    _updated_at = Column(
         DateTime(timezone=True),
         default=func.now(),
         onupdate=func.now(),
